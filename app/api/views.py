@@ -21,3 +21,22 @@ def stream_list(request):
         else:
             content = {"error": "data is not valid"}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def stream_details(request, pk):
+    if request.method == "GET":
+        stream = Stream.objects.get(id=pk)
+        serializer = StreamSerializer(stream)
+        return Response(serializer.data)
+
+    if request.method == "PUT":
+        stream = Stream.objects.get(pk=pk)
+        serializer = StreamSerializer(stream, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+    if request.method == "DELETE":
+        Stream.objects.get(id=pk).delete()
+        return Response(status=status.HTTP_200_OK)
